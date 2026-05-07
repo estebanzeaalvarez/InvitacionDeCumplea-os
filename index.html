@@ -232,24 +232,24 @@ const music = document.getElementById('bg-music');
         function toggleMusic() {
             if (music.paused) {
                 music.play().then(() => {
-                    musicIcon.innerText = '🔊';
+                    musicIcon.innerText = '🔊'; // Cambia el icono a encendido
                     musicBtn.classList.add('animate-pulse');
                 }).catch(e => console.log("Audio esperando interacción"));
             } else {
                 music.pause();
-                musicIcon.innerText = '🔇';
+                musicIcon.innerText = '🔇'; // Cambia el icono a apagado
                 musicBtn.classList.remove('animate-pulse');
             }
         }
 
-        // Al primer toque del invitado en la pantalla, la música arranca
-        document.addEventListener('click', () => {
-            if (music.paused) toggleMusic();
-        }, { once: true });
+        // Al primer toque del invitado en la pantalla, la música arranca y el icono cambia
+        const startOnFirstTouch = () => {
+            if (music.paused) {
+                toggleMusic();
+            }
+        };
 
-        document.addEventListener('touchstart', () => {
-            if (music.paused) toggleMusic();
-        }, { once: true });
-    </script>
+        document.addEventListener('click', startOnFirstTouch, { once: true });
+        document.addEventListener('touchstart', startOnFirstTouch, { once: true });
 </body>
 </html>
