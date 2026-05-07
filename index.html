@@ -111,8 +111,8 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
     <!-- Elemento de audio con un tema 8-bit -->
-<audio id="bg-music" loop preload="auto">
-    <source src="https://www.myinstants.com/media/sounds/imperial_march.mp3" type="audio/mpeg">
+<audio id="bg-music" loop preload="auto" crossorigin="anonymous">
+    <source src="https://www.soundboard.com/handler/Downloadaudio.ashx?id=255745" type="audio/mpeg">
 </audio>
 
     <!-- Botón de música flotante -->
@@ -231,10 +231,9 @@ const music = document.getElementById('bg-music');
 
         function toggleMusic() {
             if (music.paused) {
-                music.play().then(() => {
-                    musicIcon.innerText = '🔊';
-                    musicBtn.classList.add('animate-pulse');
-                }).catch(error => console.log("Esperando interacción..."));
+                music.play();
+                musicIcon.innerText = '🔊';
+                musicBtn.classList.add('animate-pulse');
             } else {
                 music.pause();
                 musicIcon.innerText = '🔇';
@@ -242,14 +241,18 @@ const music = document.getElementById('bg-music');
             }
         }
 
-        // Activación automática al primer toque o movimiento
-        const startMusic = () => {
-            if (music.paused) toggleMusic();
-        };
+        // Esta es la clave: detecta el primer toque en CUALQUIER LUGAR para activar
+        document.body.addEventListener('click', function() {
+            if (music.paused) {
+                toggleMusic();
+            }
+        }, { once: true });
 
-        ['click', 'touchstart', 'scroll'].forEach(event => {
-            window.addEventListener(event, startMusic, { once: true });
-        });
+        document.body.addEventListener('touchstart', function() {
+            if (music.paused) {
+                toggleMusic();
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
