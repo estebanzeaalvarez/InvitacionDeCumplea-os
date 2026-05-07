@@ -108,7 +108,7 @@
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4"onclick="enableAudio()" ontouchstart="enableAudio()">
 
     <!-- Elemento de audio con un tema 8-bit -->
 <audio id="bg-music" loop preload="auto" playsinline>
@@ -228,15 +228,14 @@
         const music = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-btn');
         const musicIcon = document.getElementById('music-icon');
+        let audioUnlocked = false;
 
         function toggleMusic() {
             if (music.paused) {
                 music.play().then(() => {
                     musicIcon.innerText = '🔊';
                     musicBtn.classList.add('animate-pulse');
-                }).catch(e => {
-                    console.log("El móvil bloqueó el inicio automático");
-                });
+                }).catch(e => console.log("Error al reproducir"));
             } else {
                 music.pause();
                 musicIcon.innerText = '🔇';
@@ -244,16 +243,20 @@
             }
         }
 
-        // En móviles, 'touchstart' es más efectivo que 'click'
-        const enableAudio = () => {
-            toggleMusic();
-            // Removemos los eventos para que no se pause al segundo toque
-            document.removeEventListener('click', enableAudio);
-            document.removeEventListener('touchstart', enableAudio);
-        };
+        // Esta función desbloquea el audio en celulares al primer toque
+        function enableAudio() {
+            if (!audioUnlocked) {
+                music.play().then(() => {
+                    musicIcon.innerText = '🔊';
+                    musicBtn.classList.add('animate-pulse');
+                    audioUnlocked = true;
+                }).catch(e => console.log("Esperando interacción válida"));
+            }
+        }
 
-        document.addEventListener('click', enableAudio);
-        document.addEventListener('touchstart', enableAudio);
+        // Detectores adicionales por si el 'body' falla en algunos navegadores
+        document.addEventListener('click', enableAudio, { once: true });
+        document.addEventListener('touchstart', enableAudio, { once: true });
     </script>
 </body>
 </html>
