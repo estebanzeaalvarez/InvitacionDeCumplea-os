@@ -111,7 +111,7 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
     <!-- Elemento de audio con un tema 8-bit -->
-<audio id="bg-music" loop preload="auto">
+<audio id="bg-music" loop preload="auto" playsinline>
     <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
@@ -225,31 +225,35 @@
             setTimeout(() => msg.style.opacity = '0', 2500);
         }
 
-const music = document.getElementById('bg-music');
+        const music = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-btn');
         const musicIcon = document.getElementById('music-icon');
 
         function toggleMusic() {
             if (music.paused) {
                 music.play().then(() => {
-                    musicIcon.innerText = '🔊'; // Cambia el icono a encendido
+                    musicIcon.innerText = '🔊';
                     musicBtn.classList.add('animate-pulse');
-                }).catch(e => console.log("Audio esperando interacción"));
+                }).catch(e => {
+                    console.log("El móvil bloqueó el inicio automático");
+                });
             } else {
                 music.pause();
-                musicIcon.innerText = '🔇'; // Cambia el icono a apagado
+                musicIcon.innerText = '🔇';
                 musicBtn.classList.remove('animate-pulse');
             }
         }
 
-        // Al primer toque del invitado en la pantalla, la música arranca y el icono cambia
-        const startOnFirstTouch = () => {
-            if (music.paused) {
-                toggleMusic();
-            }
+        // En móviles, 'touchstart' es más efectivo que 'click'
+        const enableAudio = () => {
+            toggleMusic();
+            // Removemos los eventos para que no se pause al segundo toque
+            document.removeEventListener('click', enableAudio);
+            document.removeEventListener('touchstart', enableAudio);
         };
 
-        document.addEventListener('click', startOnFirstTouch, { once: true });
-        document.addEventListener('touchstart', startOnFirstTouch, { once: true });
+        document.addEventListener('click', enableAudio);
+        document.addEventListener('touchstart', enableAudio);
+    </script>
 </body>
 </html>
